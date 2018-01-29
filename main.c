@@ -249,6 +249,7 @@ add_job_of_clients ( GtkToolButton * toolbutton, gpointer user_data )
 	sw->id = id;
 	sw->window = gtk_window_new ( GTK_WINDOW_TOPLEVEL );
 	gtk_window_set_modal ( (GtkWindow *) sw->window, TRUE );
+	gtk_window_set_title ( (GtkWindow *) sw->window, "Добавить выполенную работу" );
 	gtk_window_set_default_size ( (GtkWindow *) sw->window, 300, 200 );
 	sw->punkts[0] = gtk_check_button_new_with_label ( "Установка Windows 10/8/7/Vista/XP" );
 	sw->punkts[1] =  gtk_check_button_new_with_label ( "Установка драйверов" );
@@ -321,6 +322,7 @@ add_window ( GtkToolButton * toolbutton, gpointer user_data )
 	struct sadd_window *sw = malloc ( sizeof ( struct sadd_window ) );
 	sw->window = gtk_window_new ( GTK_WINDOW_TOPLEVEL );
 	gtk_window_set_modal ( (GtkWindow *) sw->window, TRUE );
+	gtk_window_set_title ( (GtkWindow *) sw->window, "Добавить нового клиента и выполненную работу" );
 	gtk_window_set_default_size ( (GtkWindow *) sw->window, 300, 200 );
 	sw->name_client = gtk_label_new ( "Имя клиента" );
 	sw->entry_name_client = gtk_entry_new ( );

@@ -6,6 +6,6 @@ install:
 	install programmer /usr/local/bin
 	install desktop/programmer.desktop /usr/share/applications
 	install desktop/programmer.svg /usr/share/icons/hicolor/scalable/apps
-	gtk-update-icon-cache
+	gtk-update-icon-cache /usr/share/icons/hicolor
 clean:
 	rm programmer

@@ -1036,6 +1036,7 @@ activate (GtkApplication *app, gpointer user_data )
 
 	GtkWidget *scroll = gtk_scrolled_window_new ( NULL, NULL );
 	GtkWidget *search = gtk_search_entry_new ( );
+	gtk_widget_set_size_request ( (GtkWidget *) search, 300, -1 );
 	GtkWidget *box = gtk_box_new ( GTK_ORIENTATION_HORIZONTAL, 0 );
 	gtk_box_pack_start ( (GtkBox *) box,
 			(GtkWidget *) toolbar,

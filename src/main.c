@@ -40,6 +40,13 @@ enum
 	};
 
 //GtkTreeStore *store_id_clients;
+void injection_text ( const char *text )
+{
+	char *injection;
+	if ( injection = strchr ( text, '\'' ) ) {
+		*injection = 0;
+	}
+}
 
 void
 add_job_item ( GtkButton *button, gpointer data )
@@ -55,6 +62,8 @@ add_job_item ( GtkButton *button, gpointer data )
 
 	client_data.total_price = gtk_entry_get_text ( (GtkEntry *) s->entry_total_price );
 	client_data.total_percent = gtk_entry_get_text ( (GtkEntry *) s->entry_total_percent );
+	injection_text ( client_data.total_price );
+	injection_text ( client_data.total_percent );
 	for ( int i = 0; i < 18; i++ ) {
 		client_data.punkts[i] = ( gtk_toggle_button_get_active ( (GtkToggleButton *) s->punkts[i] ) ) ? 1 : 0 ;
 	}
@@ -136,6 +145,11 @@ add_job ( GtkButton *button, gpointer data )
 	client_data.name = gtk_entry_get_text ( (GtkEntry *)s->entry_name_client );
 	client_data.address = gtk_entry_get_text ( (GtkEntry *) s->entry_address_client );
 	client_data.phone = gtk_entry_get_text ( (GtkEntry *) s->entry_phone_client );
+	injection_text ( client_data.total_price );
+	injection_text ( client_data.total_percent );
+	injection_text ( client_data.name );
+	injection_text ( client_data.address );
+	injection_text ( client_data.phone );
 	for ( int i = 0; i < 18; i++ ) {
 		client_data.punkts[i] = ( gtk_toggle_button_get_active ( (GtkToggleButton *) s->punkts[i] ) ) ? 1 : 0 ;
 	}

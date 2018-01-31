@@ -1,3 +1,6 @@
+/*
+ * license https://www.gnu.org/licenses/gpl-3.0.ru.html
+ */
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <mysql/mysql.h>

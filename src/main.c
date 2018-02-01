@@ -75,6 +75,17 @@ add_job_item ( GtkButton *button, gpointer data )
 	MYSQL_ROW row;
 
 	char *query = malloc ( 1024 );
+	if ( !query ) {
+		GtkWidget *message =gtk_message_dialog_new ( (GtkWindow *) s->window,
+			GTK_DIALOG_MODAL,
+			GTK_MESSAGE_ERROR,
+			GTK_BUTTONS_CLOSE,
+			"Ну удалось выделить память, попробуйте снова." );
+		gtk_dialog_run ( (GtkDialog *) message );
+		gtk_widget_destroy ( message );
+		return;
+	}
+
 	memset ( query, 0, 1024 );
 
 	unsigned long *lengths;
@@ -158,6 +169,16 @@ add_job ( GtkButton *button, gpointer data )
 	}
 
 	char *query = malloc ( 1024 );
+	if ( !query ) {
+		GtkWidget *message =gtk_message_dialog_new ( (GtkWindow *) s->window,
+			GTK_DIALOG_MODAL,
+			GTK_MESSAGE_ERROR,
+			GTK_BUTTONS_CLOSE,
+			"Ну удалось выделить память, попробуйте снова." );
+		gtk_dialog_run ( (GtkDialog *) message );
+		gtk_widget_destroy ( message );
+		return;
+	}
 	memset ( query, 0, 1024 );
 	sprintf ( query,
 			"insert into clients "
@@ -196,6 +217,16 @@ add_job ( GtkButton *button, gpointer data )
 	if ( row ) {
 		lengths = mysql_fetch_lengths ( res );
 			char *id = malloc ( lengths[i] + 1 );
+			if ( !id ) {
+				GtkWidget *message =gtk_message_dialog_new ( (GtkWindow *) s->window,
+					GTK_DIALOG_MODAL,
+					GTK_MESSAGE_ERROR,
+					GTK_BUTTONS_CLOSE,
+					"Ну удалось выделить память, попробуйте снова." );
+				gtk_dialog_run ( (GtkDialog *) message );
+				gtk_widget_destroy ( message );
+				return;
+			}
 			memset ( id, 0, lengths[i] + 1 );
 			sprintf ( id, "%.*s", lengths[i], row[i] );
 			sprintf ( query,
@@ -263,6 +294,16 @@ add_job_of_clients ( GtkToolButton * toolbutton, gpointer user_data )
 {
 	gchar *id = ( gchar *) user_data;
 	struct sadd_window *sw = malloc ( sizeof ( struct sadd_window ) );
+	if ( !sw ) {
+		GtkWidget *message =gtk_message_dialog_new ( (GtkWindow *) sw->window,
+			GTK_DIALOG_MODAL,
+			GTK_MESSAGE_ERROR,
+			GTK_BUTTONS_CLOSE,
+			"Ну удалось выделить память, попробуйте снова." );
+		gtk_dialog_run ( (GtkDialog *) message );
+		gtk_widget_destroy ( message );
+		return;
+	}
 	sw->id = id;
 	sw->window = gtk_window_new ( GTK_WINDOW_TOPLEVEL );
 	gtk_window_set_modal ( (GtkWindow *) sw->window, TRUE );
@@ -337,6 +378,9 @@ void
 add_window ( GtkToolButton * toolbutton, gpointer user_data )
 {
 	struct sadd_window *sw = malloc ( sizeof ( struct sadd_window ) );
+	if ( !sw ) {
+		return;
+	}
 	sw->window = gtk_window_new ( GTK_WINDOW_TOPLEVEL );
 	gtk_window_set_modal ( (GtkWindow *) sw->window, TRUE );
 	gtk_window_set_title ( (GtkWindow *) sw->window, "Добавить нового клиента и выполненную работу" );
@@ -495,6 +539,9 @@ get_job_items ( GtkToolButton *toolbutton, gpointer data )
 	MYSQL_ROW row;
 
 	char *query = malloc ( 1024 );
+	if ( !query ) {
+		return;
+	}
 	memset ( query, 0, 1024 );
 	sprintf ( query,
 			"select number, date, percent, total from jobs where id = '%s';",
@@ -541,6 +588,9 @@ activate_job ( GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *col
 		gtk_tree_model_get ( model, &iter, ID_JOB, &id, -1 );
 
 		struct info_job * ij = malloc ( sizeof ( struct info_job ) );
+		if ( !ij ) {
+			return;
+		}
 
 		ij->window = gtk_window_new ( GTK_WINDOW_TOPLEVEL );
 		GtkWidget *grid = gtk_grid_new ( );
@@ -571,6 +621,9 @@ activate_job ( GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *col
 					1,1);
 		}
 		char *query = malloc ( 1024 );
+		if ( !query ) {
+			return;
+		}
 		memset ( query, 0, 1024 );
 		sprintf ( query,
 			"select punkt1, punkt2, punkt3, punkt4, punkt5, punkt6, punkt7, punkt8, punkt9 "
@@ -609,8 +662,20 @@ void
 activate_client ( GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *column,
 		gpointer data  )
 {
-	struct get_job_info *gji = malloc ( sizeof ( struct get_job_info ) );
 	struct sadd_window *sw = malloc ( sizeof ( struct sadd_window ) );
+	if ( !sw ) {
+		return;
+	}
+	struct get_job_info *gji = malloc ( sizeof ( struct get_job_info ) );
+	if ( !gji ) {
+		GtkWidget *message =gtk_message_dialog_new ( (GtkWindow *) sw->window,
+			GTK_DIALOG_MODAL,
+			GTK_MESSAGE_ERROR,
+			GTK_BUTTONS_CLOSE,
+			"Ну удалось выделить память, попробуйте снова." );
+		gtk_dialog_run ( (GtkDialog *) message );
+		gtk_widget_destroy ( message );
+	}
 	GtkTreeSelection *select;
 	select = gtk_tree_view_get_selection ( (GtkTreeView *) tree_view );
 	gtk_tree_selection_set_mode ( select, GTK_SELECTION_SINGLE );
@@ -690,6 +755,9 @@ activate_client ( GtkTreeView *tree_view, GtkTreePath *path, GtkTreeViewColumn *
 		MYSQL_ROW row;
 
 		char *query = malloc ( 1024 );
+		if ( !query ) {
+			return;
+		}
 		memset ( query, 0, 1024 );
 		sprintf ( query,
 				"select name, phone, address from clients where id='%s';",
@@ -893,6 +961,10 @@ show_many ( GtkButton *button, gpointer data )
 	MYSQL_RES *res;
 
 	char *query = malloc ( 1024 );
+	if ( !query ) {
+		return;
+	}
+
 	memset ( query, 0, 1024 );
 
 	sprintf ( query,
@@ -926,10 +998,43 @@ show_many ( GtkButton *button, gpointer data )
 	}
 
 	char *total_my_str = malloc ( 64 );
+	if ( !total_my_str ) {
+		GtkWidget *message =gtk_message_dialog_new ( (GtkWindow *) mi->window,
+			GTK_DIALOG_MODAL,
+			GTK_MESSAGE_ERROR,
+			GTK_BUTTONS_CLOSE,
+			"Ну удалось выделить память, попробуйте снова." );
+		gtk_dialog_run ( (GtkDialog *) message );
+		gtk_widget_destroy ( message );
+		return;
+	}
 	memset ( total_my_str, 0, 64 );
 	char *total_company_str = malloc ( 64 );
+	if ( !total_company_str ) {
+		free ( total_my_str );
+		GtkWidget *message =gtk_message_dialog_new ( (GtkWindow *) mi->window,
+			GTK_DIALOG_MODAL,
+			GTK_MESSAGE_ERROR,
+			GTK_BUTTONS_CLOSE,
+			"Ну удалось выделить память, попробуйте снова." );
+		gtk_dialog_run ( (GtkDialog *) message );
+		gtk_widget_destroy ( message );
+		return;
+	}
 	memset ( total_company_str, 0, 64 );
 	char *total_total_str = malloc ( 64 );
+	if ( !total_total_str ) {
+		free ( total_my_str );
+		free ( total_company_str );
+		GtkWidget *message =gtk_message_dialog_new ( (GtkWindow *) mi->window,
+			GTK_DIALOG_MODAL,
+			GTK_MESSAGE_ERROR,
+			GTK_BUTTONS_CLOSE,
+			"Ну удалось выделить память, попробуйте снова." );
+		gtk_dialog_run ( (GtkDialog *) message );
+		gtk_widget_destroy ( message );
+		return;
+	}
 	memset ( total_total_str, 0, 64 );
 	sprintf ( total_my_str, "%f", total_my );
 	sprintf ( total_company_str, "%f", total_company );
@@ -949,6 +1054,8 @@ many ( GtkToolButton *toolbutton, gpointer data )
 {
 	struct many_info *mi = malloc ( sizeof ( struct many_info ) );
 	mi->window = gtk_window_new ( GTK_WINDOW_TOPLEVEL );
+	if ( !mi ) {
+	}
 	gtk_window_set_title ( (GtkWindow *) mi->window, "Сведения о заработке" );
 	GtkWidget *label_my = gtk_label_new ( "Я заработал" );
 	GtkWidget *label_company = gtk_label_new ( "Компания заработала" );
@@ -1062,6 +1169,9 @@ activate (GtkApplication *app, gpointer user_data )
 			TRUE,
 			0);
 	struct search_item *si = malloc ( sizeof ( struct search_item ) );
+	if ( !si ) {
+		return;
+	}
 	si->clients_id = gtk_tree_view_new ( );
 	gtk_container_add ( (GtkContainer *) scroll, si->clients_id );
 	si->store_id_clients = gtk_tree_store_new ( N_COLUMNS,

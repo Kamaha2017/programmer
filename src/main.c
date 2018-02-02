@@ -3,6 +3,7 @@
  */
 #include <gtk/gtk.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <mysql/mysql.h>
 #include <string.h>
 
@@ -51,6 +52,37 @@ void injection_text ( const char *text )
 	}
 }
 
+int checked_string ( const char *str, GtkWidget *window )
+{
+	const char *p = str;
+	int point = 0;
+	for ( ; *p != 0; p++ ) {
+		if ( *p == '.' ) {
+			point++;
+			if ( point >= 2 ) {
+				GtkWidget *message =gtk_message_dialog_new ( (GtkWindow *) window,
+				GTK_DIALOG_MODAL,
+				GTK_MESSAGE_ERROR,
+				GTK_BUTTONS_CLOSE,
+				"Слишком много точек" );
+				gtk_dialog_run ( (GtkDialog *) message );
+				gtk_widget_destroy ( message );
+				return -1;
+			}
+			continue;
+		}
+		if ( !isdigit ( *p ) ) {
+			GtkWidget *message =gtk_message_dialog_new ( (GtkWindow *) window,
+			GTK_DIALOG_MODAL,
+			GTK_MESSAGE_ERROR,
+			GTK_BUTTONS_CLOSE,
+			"Буквы вместо цифр" );
+			gtk_dialog_run ( (GtkDialog *) message );
+			gtk_widget_destroy ( message );
+			return -1;
+		}
+	}
+}
 void
 add_job_item ( GtkButton *button, gpointer data )
 {
@@ -64,7 +96,9 @@ add_job_item ( GtkButton *button, gpointer data )
 	struct sadd_window *s = (struct sadd_window *) data;
 
 	client_data.total_price = gtk_entry_get_text ( (GtkEntry *) s->entry_total_price );
+	if ( checked_string ( client_data.total_price, s->window ) == -1 ) return;
 	client_data.total_percent = gtk_entry_get_text ( (GtkEntry *) s->entry_total_percent );
+	if ( checked_string ( client_data.total_percent, s->window ) == -1 ) return;
 	injection_text ( client_data.total_price );
 	injection_text ( client_data.total_percent );
 	for ( int i = 0; i < 18; i++ ) {
@@ -155,7 +189,9 @@ add_job ( GtkButton *button, gpointer data )
 	struct sadd_window *s = (struct sadd_window *) data;
 
 	client_data.total_price = gtk_entry_get_text ( (GtkEntry *) s->entry_total_price );
+	if ( checked_string ( client_data.total_price, s->window ) == -1 ) return;
 	client_data.total_percent = gtk_entry_get_text ( (GtkEntry *) s->entry_total_percent );
+	if ( checked_string ( client_data.total_percent, s->window ) == -1 ) return;
 	client_data.name = gtk_entry_get_text ( (GtkEntry *)s->entry_name_client );
 	client_data.address = gtk_entry_get_text ( (GtkEntry *) s->entry_address_client );
 	client_data.phone = gtk_entry_get_text ( (GtkEntry *) s->entry_phone_client );

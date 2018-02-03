@@ -314,7 +314,7 @@ void add_job(GtkButton* button, gpointer data)
 		}
 		gtk_widget_destroy ( (GtkWidget *) s->window );
 #endif
-    free(s);
+//    free(s);
     free(query);
 }
 

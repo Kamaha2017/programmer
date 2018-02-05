@@ -317,19 +317,16 @@ void add_job(GtkButton* button, gpointer data)
 //    free(s);
     free(query);
 }
-
+gboolean delete_add_job_of_clients ( GtkWidget *widget, GdkEvent *event, gpointer data )
+{
+	struct sadd_window* sw = (struct sadd_window*) data;
+	free ( sw );
+}
 void add_job_of_clients(GtkToolButton* toolbutton, gpointer user_data)
 {
     gchar* id = (gchar*)user_data;
     struct sadd_window* sw = malloc(sizeof(struct sadd_window));
     if (!sw) {
-        GtkWidget* message = gtk_message_dialog_new((GtkWindow*)sw->window,
-            GTK_DIALOG_MODAL,
-            GTK_MESSAGE_ERROR,
-            GTK_BUTTONS_CLOSE,
-            "Ну удалось выделить память, попробуйте снова.");
-        gtk_dialog_run((GtkDialog*)message);
-        gtk_widget_destroy(message);
         return;
     }
     sw->id = id;
@@ -401,13 +398,27 @@ void add_job_of_clients(GtkToolButton* toolbutton, gpointer user_data)
         2, 1);
 
     g_signal_connect((GtkWidget*)sw->button_add_item, "clicked", G_CALLBACK(add_job_item), (gpointer)sw);
+		g_signal_connect((GtkWidget*)sw->window, "delete-event", G_CALLBACK(delete_add_job_of_clients), sw );
     gtk_container_add((GtkContainer*)sw->window, (GtkWidget*)grid);
     gtk_widget_show_all(sw->window);
 }
-void add_window(GtkToolButton* toolbutton, gpointer user_data)
+gboolean delete_add_window ( GtkWidget *widget, GdkEvent *event, gpointer data )
 {
+	struct sadd_window *sw = (struct sadd_window*) data;
+	free (sw);
+}
+void add_window(GtkToolButton* toolbutton, gpointer data)
+{
+		GtkWidget *main_window = (GtkWidget *) data;
     struct sadd_window* sw = malloc(sizeof(struct sadd_window));
     if (!sw) {
+        GtkWidget* message = gtk_message_dialog_new((GtkWindow*)main_window,
+            GTK_DIALOG_MODAL,
+            GTK_MESSAGE_ERROR,
+            GTK_BUTTONS_CLOSE,
+            "Ну удалось выделить память, попробуйте снова.");
+        gtk_dialog_run((GtkDialog*)message);
+        gtk_widget_destroy(message);
         return;
     }
     sw->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -514,6 +525,7 @@ void add_window(GtkToolButton* toolbutton, gpointer user_data)
         2, 1);
 
     g_signal_connect((GtkWidget*)sw->button_add_item, "clicked", G_CALLBACK(add_job), (gpointer)sw);
+		g_signal_connect((GtkWidget*)sw->window, "delete-event", G_CALLBACK(delete_add_window), sw );
     gtk_container_add((GtkContainer*)sw->window, (GtkWidget*)grid);
     gtk_widget_show_all(sw->window);
 }
@@ -705,6 +717,10 @@ void activate_job(GtkTreeView* tree_view, GtkTreePath* path, GtkTreeViewColumn* 
         gtk_widget_show_all((GtkWidget*)ij->window);
     }
 }
+typedef struct {
+	GtkWidget *window;
+	gchar *id;
+}window_and_id;
 
 void activate_client(GtkTreeView* tree_view, GtkTreePath* path, GtkTreeViewColumn* column,
     gpointer data)
@@ -844,7 +860,8 @@ void activate_client(GtkTreeView* tree_view, GtkTreePath* path, GtkTreeViewColum
         }
         mysql_free_result(res);
 
-        g_signal_connect((GtkWidget*)toolbar_item_add, "clicked", G_CALLBACK(add_job_of_clients), id);
+
+        g_signal_connect((GtkWidget*)toolbar_item_add, "clicked", G_CALLBACK(add_job_of_clients), id );
 
         GtkWidget* frame = gtk_frame_new("Выполненные работы");
         gji->client_id = gtk_tree_view_new();
@@ -1187,7 +1204,7 @@ activate(GtkApplication* app, gpointer user_data)
     GtkToolItem* toolbar_item_add = gtk_tool_button_new(NULL, "Добавить контакт");
     gtk_tool_button_set_icon_name((GtkToolButton*)toolbar_item_add, "contact-new-symbolic.symbolic");
     gtk_toolbar_insert((GtkToolbar*)toolbar, (GtkToolItem*)toolbar_item_add, -1);
-    g_signal_connect((GtkWidget*)toolbar_item_add, "clicked", G_CALLBACK(add_window), NULL);
+    g_signal_connect((GtkWidget*)toolbar_item_add, "clicked", G_CALLBACK(add_window), main_window);
 
     GtkToolItem* toolbar_item_get_client = gtk_tool_button_new(NULL, "Получить список клиентов");
     gtk_tool_button_set_icon_name((GtkToolButton*)toolbar_item_get_client, "go-down-symbolic.symbolic");

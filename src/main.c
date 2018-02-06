@@ -57,6 +57,9 @@ void injection_text(const char* text)
 		if (injection = strchr(text, ';')) {
 			*injection = 0;
 		}
+		if (injection = strstr(text, "/*")) {
+			*injection = 0;
+		}
 }
 
 int checked_string(const char* str, GtkWidget* window)
